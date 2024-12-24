@@ -11,11 +11,11 @@ struct Tensor {
     Tensor(unsigned int const *shape_) {
         unsigned int size = 1;
         // TODO: 填入正确的 shape 并计算 size
-        data = new T[size];
         for(int i = 0; i < N;++i) {
             shape[i] = shape_[i];
             size *= shape[i];
         }
+        data = new T[size];
         std::memset(data, 0, size * sizeof(T));
     }
     ~Tensor() {
