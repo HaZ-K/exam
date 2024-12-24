@@ -78,7 +78,6 @@ int main(int argc, char **argv) {
         unsigned int i1[]{3, 4, 99};
         tensor[i1] = 2.f;
         ASSERT(tensor[i1] == 2.f, "tensor[i1] should be 2");
-        printf("tensor[i1] = %f\n",tensor.data[3683]);
         ASSERT(tensor.data[3683] == 2.f, "tensor[i1] should be 2");
     }
     return 0;
