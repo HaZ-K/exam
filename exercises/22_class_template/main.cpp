@@ -7,12 +7,18 @@ struct Tensor4D {
     unsigned int shape[4];
     T *data;
 
-    Tensor4D(unsigned int const shape_[4], T const *data_) {
+    Tensor4D(unsigned int const *shape_, T const *data_) {
         unsigned int size = 1;
         // TODO: 填入正确的 shape 并计算 size
+        for(int i =0;i<4;i++){
+            shape[i] = shape_[i];
+            size *= shape[i];
+        }
+       
         data = new T[size];
         std::memcpy(data, data_, size * sizeof(T));
     }
+
     ~Tensor4D() {
         delete[] data;
     }
@@ -26,8 +32,35 @@ struct Tensor4D {
     // `others` 长度为 1 但 `this` 长度不为 1 的维度将发生广播计算。
     // 例如，`this` 形状为 `[1, 2, 3, 4]`，`others` 形状为 `[1, 2, 1, 4]`，
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
-    Tensor4D &operator+=(Tensor4D const &others) {
-        // TODO: 实现单向广播的加法
+Tensor4D &operator+=(Tensor4D const &others) {
+        // 检查形状兼容性
+        for (int i = 0; i < 4; ++i) {
+            if (shape[i] != others.shape[i] && others.shape[i] != 1) {
+                throw std::invalid_argument("Incompatible shapes for broadcasting.");
+            }
+        }
+
+        // 进行加法运算
+        for (unsigned int i = 0; i < shape[0]; ++i) {
+            for (unsigned int j = 0; j < shape[1]; ++j) {
+                for (unsigned int k = 0; k < shape[2]; ++k) {
+                    for (unsigned int l = 0; l < shape[3]; ++l) {
+                        // 计算 others 的索引
+                        unsigned int others_i = (i < others.shape[0]) ? i : 0;
+                        unsigned int others_j = (j < others.shape[1]) ? j : 0;
+                        unsigned int others_k = (k < others.shape[2]) ? k : 0;
+                        unsigned int others_l = (l < others.shape[3]) ? l : 0;
+
+                        // 加法操作
+                        data[i * shape[1] * shape[2] * shape[3] + j * shape[2] * shape[3] + k * shape[3] + l] +=
+                            others.data[others_i * others.shape[1] * others.shape[2] * others.shape[3] +
+                                         others_j * others.shape[2] * others.shape[3] +
+                                         others_k * others.shape[3] + others_l];
+                    }
+                }
+            }
+        }
+
         return *this;
     }
 };
@@ -60,7 +93,6 @@ int main(int argc, char **argv) {
             1, 1, 1, 1,
             2, 2, 2, 2,
             3, 3, 3, 3,
-
             4, 4, 4, 4,
             5, 5, 5, 5,
             6, 6, 6, 6};
@@ -71,7 +103,6 @@ int main(int argc, char **argv) {
             6,
             5,
             4,
-
             3,
             2,
             1};

@@ -14,11 +14,18 @@ class Fibonacci {
 
 public:
     // TODO: 实现构造器
-    // Fibonacci()
+    Fibonacci(){
+        cache[0] = 0;
+        cache[1] = 1;
+        cached = 2;  // 初始 cache 已有 2 个值，下一个值可以从 cache[1] 开始。
+        // 注意，cache[0] 和 cache[1] 已被显式初始化，所以在 for 循环中不需要再检查是否小于 2。
+        // 这段代码保证了 cache 至少有 2 个值，可以正常执行 get() 方法。
+        // 若 cache 数组更大，可以将 if 条件去掉。
+    }
 
     // TODO: 实现正确的缓存优化斐波那契计算
     size_t get(int i) {
-        for (; false; ++cached) {
+        for (; cached <=i; ++cached) {
             cache[cached] = cache[cached - 1] + cache[cached - 2];
         }
         return cache[i];
